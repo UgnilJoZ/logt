@@ -52,5 +52,4 @@ $ logt ./test.sh
 |  -h  | Show a more detailed help. |
 
 ## Shortcomings
-* If your wrapped command has dash-options ("-f -o"), they have to come after "--" to mark the end of the `logt` options: `logt -sr -- grep -R time`
-* Since `logt` is not a bash builtin, it can not directly execute bracket commands. `time (a && b)` would therefore translate to something like `logt -- sh -c 'a && b'`.
+* Since `logt` is not a shell builtin, it can not directly execute bracket commands. `time (a && b)` would therefore very roughly translate to something like `logt sh -c 'a && b'`.

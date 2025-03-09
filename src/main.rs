@@ -26,6 +26,7 @@ struct Args {
     program: String,
 
     /// The arguments to that program.
+    #[arg(allow_hyphen_values=true, trailing_var_arg=true)]
     args: Vec<String>,
 }
 
