@@ -1,7 +1,7 @@
 use chrono::Local;
 use clap::Parser;
 use std::{
-    io::{BufRead, BufReader, Read, Result, stderr, stdout},
+    io::{BufRead, BufReader, Read, Result},
     process::{Command, Stdio},
     sync::mpsc::{Sender, channel},
     thread,
@@ -61,7 +61,7 @@ impl LineFormatter {
 fn handle_output(stdio: impl Read, id: &'static str, sender: Sender<(&str, Result<String>)>) {
     let reader = BufReader::new(stdio);
     for line in reader.lines() {
-        sender.send((id, line));
+        sender.send((id, line)).expect("Sending log line to main thread");
     }
 }
 
@@ -83,8 +83,6 @@ fn main() {
         .stderr
         .take()
         .expect("Connect to stderr of child process");
-    let stdout = stdout().lock();
-    let stderr = stderr().lock();
 
     let (stdout_sender, receiver) = channel();
     let stderr_sender = stdout_sender.clone();
