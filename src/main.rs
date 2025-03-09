@@ -1,6 +1,25 @@
 use std::{
-    io::{stderr, stdout, BufRead, BufReader, Read, Result}, process::{Command, Stdio}, sync::mpsc::{channel, Sender}, thread,
+    io::{BufRead, BufReader, Read, Result, stderr, stdout},
+    process::{Command, Stdio},
+    sync::mpsc::{Sender, channel},
+    thread,
 };
+use clap::Parser;
+
+/// logt is a command wrapper that measures the time of each output line.
+/// 
+/// It prefixes each line that the wrapped command outputs with the time it was written.
+#[derive(Parser, Debug)]
+#[command(version, about, long_about = None)]
+struct Args {
+    /// Don't use the absolute time, but the time since the start of the command.
+    #[arg(short, long)]
+    relative: bool,
+
+    /// The command line to run.
+    cmd: Vec<String>,
+}
+
 
 fn handle_output(stdio: impl Read, id: &'static str, sender: Sender<(&str, Result<String>)>) {
     let reader = BufReader::new(stdio);
@@ -10,8 +29,9 @@ fn handle_output(stdio: impl Read, id: &'static str, sender: Sender<(&str, Resul
 }
 
 fn main() {
-    let mut subprocess = Command::new("seq")
-        .arg("4")
+    let args = Args::parse();
+    let mut subprocess = Command::new(args.cmd.get(0).expect("Reading commandline"))
+        .args(&args.cmd[1..])
         .stdin(Stdio::inherit())
         .stdout(Stdio::piped())
         .stderr(Stdio::piped())
@@ -48,10 +68,6 @@ fn main() {
         }
     }
 
-    stdout_thread
-        .join()
-        .expect("Join stdout catching thread");
-    stderr_thread
-        .join()
-        .expect("Join stderr catching thread");
+    stdout_thread.join().expect("Join stdout catching thread");
+    stderr_thread.join().expect("Join stderr catching thread");
 }
