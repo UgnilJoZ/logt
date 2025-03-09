@@ -61,7 +61,9 @@ impl LineFormatter {
 fn handle_output(stdio: impl Read, id: &'static str, sender: Sender<(&str, Result<String>)>) {
     let reader = BufReader::new(stdio);
     for line in reader.lines() {
-        sender.send((id, line)).expect("Sending log line to main thread");
+        sender
+            .send((id, line))
+            .expect("Sending log line to main thread");
     }
 }
 
@@ -104,4 +106,8 @@ fn main() {
 
     stdout_thread.join().expect("Join stdout catching thread");
     stderr_thread.join().expect("Join stderr catching thread");
+
+    if let Some(code) = subprocess.wait().expect("Waiting for child process").code() {
+        std::process::exit(code)
+    }
 }
