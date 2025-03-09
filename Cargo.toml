@@ -2,6 +2,12 @@
 name = "logt"
 version = "0.1.0"
 edition = "2024"
+authors = ["Jan Ole Zabel <jan.zabel@posteo.de>"]
+description = "CLI wrapper that provides timestamps to output lines"
+readme = "https://codeberg.org/Joz/logt/src/branch/main/README.md"
+repository = "https://codeberg.org/Joz/logt"
+license = "LGPL-3.0"
+exclude = ["test.sh"]
 
 [dependencies]
 chrono = "0.4.40"
