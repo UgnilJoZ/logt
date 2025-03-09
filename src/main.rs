@@ -22,8 +22,11 @@ struct Args {
     #[arg(short, long)]
     show_stream: bool,
 
-    /// The command line to run.
-    cmd: Vec<String>,
+    /// The program to run.
+    program: String,
+
+    /// The arguments to that program.
+    args: Vec<String>,
 }
 
 struct LineFormatter {
@@ -64,8 +67,8 @@ fn handle_output(stdio: impl Read, id: &'static str, sender: Sender<(&str, Resul
 
 fn main() {
     let args = Args::parse();
-    let mut subprocess = Command::new(args.cmd.get(0).expect("Reading commandline"))
-        .args(&args.cmd[1..])
+    let mut subprocess = Command::new(&args.program)
+        .args(&args.args)
         .stdin(Stdio::inherit())
         .stdout(Stdio::piped())
         .stderr(Stdio::piped())
